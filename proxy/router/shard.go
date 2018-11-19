@@ -186,50 +186,61 @@ func (s *DateYearShard) FindForKey(key interface{}) (int, error) {
 }
 
 type DateMonthShard struct {
+	SubTableIndexs []int
 }
 
 //the format of date is: YYYY-MM-DD HH:MM:SS,YYYY-MM-DD or unix timestamp(int)
 func (s *DateMonthShard) FindForKey(key interface{}) (int, error) {
 	timeFormat := "2006-01-02"
+	yearMonth :=0
+	var err error
 	switch val := key.(type) {
 	case int:
 		tm := time.Unix(int64(val), 0)
 		dateStr := tm.Format(timeFormat)
 		s := dateStr[:4] + dateStr[5:7]
-		yearMonth, err := strconv.Atoi(s)
+		yearMonth, err = strconv.Atoi(s)
 		if err != nil {
 			return 0, err
 		}
-		return yearMonth, nil
+		break
+		//return yearMonth, nil
 	case uint64:
 		tm := time.Unix(int64(val), 0)
 		dateStr := tm.Format(timeFormat)
 		s := dateStr[:4] + dateStr[5:7]
-		yearMonth, err := strconv.Atoi(s)
+		yearMonth, err = strconv.Atoi(s)
 		if err != nil {
 			return 0, err
 		}
-		return yearMonth, nil
+		break
+		//return yearMonth, nil
 	case int64:
 		tm := time.Unix(val, 0)
 		dateStr := tm.Format(timeFormat)
 		s := dateStr[:4] + dateStr[5:7]
-		yearMonth, err := strconv.Atoi(s)
+		yearMonth, err = strconv.Atoi(s)
 		if err != nil {
 			return 0, err
 		}
-		return yearMonth, nil
+		break
+		//return yearMonth, nil
 	case string:
 		if len(val) < len(timeFormat) {
 			return 0, fmt.Errorf("invalid date format %s", val)
 		}
 		s := val[:4] + val[5:7]
-		if v, err := strconv.Atoi(s); err != nil {
+
+		if yearMonth, err = strconv.Atoi(s); err != nil {
 			return 0, fmt.Errorf("invalid date format %s", val)
-		} else {
-			return v, nil
 		}
+
 	}
+	if yearMonth<s.SubTableIndexs[0] {
+		yearMonth=s.SubTableIndexs[0]
+	}
+
+	return yearMonth, nil
 	panic(NewKeyError("Unexpected key variable type %T", key))
 }
 

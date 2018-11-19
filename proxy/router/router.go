@@ -264,7 +264,7 @@ func parseShard(r *Rule, cfg *config.ShardConfig) error {
 	case DateDayRuleType:
 		r.Shard = &DateDayShard{}
 	case DateMonthRuleType:
-		r.Shard = &DateMonthShard{}
+		r.Shard = &DateMonthShard{r.SubTableIndexs}
 	case DateYearRuleType:
 		r.Shard = &DateYearShard{}
 	default:
