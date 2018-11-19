@@ -229,8 +229,11 @@ func NewServer(cfg *config.Config) (*Server, error) {
 	s.counter = new(Counter)
 	s.addr = cfg.Addr
 	s.users = make(map[string]string)
+	golog.Info("server", "NewServer", "user list:"+fmt.Sprint(len(cfg.UserList)),0)
 	for _, user := range cfg.UserList {
 		s.users[user.User] = user.Password
+		golog.Info("server", "NewServer", "user:"+user.User+"||pass:"+user.Password,0)
+
 	}
 	atomic.StoreInt32(&s.statusIndex, 0)
 	s.status[s.statusIndex] = Online
@@ -288,7 +291,7 @@ func NewServer(cfg *config.Config) (*Server, error) {
 		}
 	}
 
-	var err error
+		var err error
 	netProto := "tcp"
 
 	s.listener, err = net.Listen(netProto, s.addr)
